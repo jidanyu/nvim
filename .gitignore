@@ -1,0 +1,16 @@
+# 备份/交换/撤销缓存（你可以在 options.lua 里自定义路径）
+*.swp
+*.swo
+*.tmp
+Session.vim
+.tags
+# 不要忽略 lazy-lock.json
+
+tt.*
+.tests
+doc/tags
+debug
+.repro
+foo.*
+*.log
+data
