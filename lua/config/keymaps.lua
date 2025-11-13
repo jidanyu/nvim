@@ -4,11 +4,10 @@
 -- 在插入模式下，按 jj 返回到正常模式
 
 -- 插入模式：jj 退到 Normal（你原来的这行是对的）
-vim.keymap.set('i', 'jj', '<Esc>', { noremap = true, silent = true, desc = 'Exit insert' })
+vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Exit insert" })
 
 -- 终端模式：jj 退到 Normal（关键：用 <C-\><C-n>）
-vim.keymap.set('t', 'jj', [[<C-\><C-n>]], { noremap = true, silent = true, desc = 'Exit terminal mode' })
-
+vim.keymap.set("t", "jj", [[<C-\><C-n>]], { noremap = true, silent = true, desc = "Exit terminal mode" })
 
 -- 切换当前行的 - [ ] / - [x]（没有就自动加）
 local function toggle_checkbox()
@@ -35,11 +34,19 @@ local ok, cmp = pcall(require, "cmp")
 
 -- 左/右
 vim.keymap.set("i", "<C-b>", function()
-  if ok and cmp.visible() then cmp.scroll_docs(-4) else vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left>", true, false, true), "n", false) end
+  if ok and cmp.visible() then
+    cmp.scroll_docs(-4)
+  else
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Left>", true, false, true), "n", false)
+  end
 end, { desc = "Emacs: backward-char" })
 
 vim.keymap.set("i", "<C-f>", function()
-  if ok and cmp.visible() then cmp.scroll_docs(4) else vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Right>", true, false, true), "n", false) end
+  if ok and cmp.visible() then
+    cmp.scroll_docs(4)
+  else
+    vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Right>", true, false, true), "n", false)
+  end
 end, { desc = "Emacs: forward-char" })
 
 -- 行首 / 行尾（非空白 / 行尾）
@@ -52,3 +59,9 @@ vim.keymap.set("i", "<C-e>", "<C-o>$", { desc = "Emacs: end-of-line" })
 -- vim.keymap.set("c", "<C-a>", "<Home>")
 -- vim.keymap.set("c", "<C-e>", "<End>")
 
+-- <leader>tb：在“当前文件目录”开终端
+vim.keymap.set("n", "<leader>tb", function()
+  local d = vim.fn.expand("%:p:h")
+  vim.cmd("lcd " .. vim.fn.fnameescape(d))
+  vim.cmd("botright split | resize 12 | terminal")
+end, { desc = "Terminal @ buffer dir" })

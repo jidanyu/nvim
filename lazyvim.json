@@ -3,6 +3,7 @@
     "lazyvim.plugins.extras.formatting.biome",
     "lazyvim.plugins.extras.formatting.prettier",
     "lazyvim.plugins.extras.lang.dart",
+    "lazyvim.plugins.extras.lang.git",
     "lazyvim.plugins.extras.lang.rust"
   ],
   "install_version": 8,
