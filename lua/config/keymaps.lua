@@ -4,10 +4,10 @@
 -- 在插入模式下，按 jj 返回到正常模式
 
 -- 插入模式：jj 退到 Normal（你原来的这行是对的）
-vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Exit insert" })
+-- vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Exit insert" })
 
 -- 终端模式：jj 退到 Normal（关键：用 <C-\><C-n>）
-vim.keymap.set("t", "jj", [[<C-\><C-n>]], { noremap = true, silent = true, desc = "Exit terminal mode" })
+-- vim.keymap.set("t", "jj", [[<C-\><C-n>]], { noremap = true, silent = true, desc = "Exit terminal mode" })
 
 -- 切换当前行的 - [ ] / - [x]（没有就自动加）
 local function toggle_checkbox()
@@ -65,3 +65,20 @@ vim.keymap.set("n", "<leader>tb", function()
   vim.cmd("lcd " .. vim.fn.fnameescape(d))
   vim.cmd("botright split | resize 12 | terminal")
 end, { desc = "Terminal @ buffer dir" })
+
+-- 复制当前行第一条 LSP 诊断信息到系统剪贴板
+vim.keymap.set("n", "<leader>cD", function()
+  local pos = vim.api.nvim_win_get_cursor(0)
+  local line = pos[1] - 1 -- diagnostic 的 lnum 是从 0 开始
+
+  -- 获取当前 buffer，这一行上的所有诊断
+  local diags = vim.diagnostic.get(0, { lnum = line })
+  if #diags == 0 then
+    vim.notify("当前行没有诊断信息", vim.log.levels.INFO)
+    return
+  end
+
+  local msg = diags[1].message -- 取第一条，如果有多条可以自己拼接
+  vim.fn.setreg("+", msg) -- 写入系统剪贴板寄存器 +
+  vim.notify("已复制诊断信息到剪贴板", vim.log.levels.INFO)
+end, { desc = "Yank LSP diagnostic message" })
