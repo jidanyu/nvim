@@ -4,10 +4,10 @@
 -- 在插入模式下，按 jj 返回到正常模式
 
 -- 插入模式：jj 退到 Normal（你原来的这行是对的）
--- vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Exit insert" })
+vim.keymap.set("i", "jj", "<Esc>", { noremap = true, silent = true, desc = "Exit insert" })
 
 -- 终端模式：jj 退到 Normal（关键：用 <C-\><C-n>）
--- vim.keymap.set("t", "jj", [[<C-\><C-n>]], { noremap = true, silent = true, desc = "Exit terminal mode" })
+vim.keymap.set("t", "jj", [[<C-\><C-n>]], { noremap = true, silent = true, desc = "Exit terminal mode" })
 
 -- 切换当前行的 - [ ] / - [x]（没有就自动加）
 local function toggle_checkbox()
@@ -60,11 +60,17 @@ vim.keymap.set("i", "<C-e>", "<C-o>$", { desc = "Emacs: end-of-line" })
 -- vim.keymap.set("c", "<C-e>", "<End>")
 
 -- <leader>tb：在“当前文件目录”开终端
-vim.keymap.set("n", "<leader>tb", function()
+vim.keymap.set("n", "<leader>tt", function()
   local d = vim.fn.expand("%:p:h")
-  vim.cmd("lcd " .. vim.fn.fnameescape(d))
-  vim.cmd("botright split | resize 12 | terminal")
-end, { desc = "Terminal @ buffer dir" })
+  if d == "" then
+    d = vim.loop.cwd() -- 当前 buffer 没有路径时兜底
+  end
+
+  vim.cmd("tabnew") -- 新开一个 tab（全屏空间）
+  vim.cmd("tcd " .. vim.fn.fnameescape(d)) -- 只影响这个 tab 的工作目录
+  vim.cmd("terminal")
+  vim.cmd("startinsert")
+end, { desc = "Terminal (tab) @ buffer dir" })
 
 -- 复制当前行第一条 LSP 诊断信息到系统剪贴板
 vim.keymap.set("n", "<leader>cD", function()
