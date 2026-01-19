@@ -63,14 +63,27 @@ vim.keymap.set("i", "<C-e>", "<C-o>$", { desc = "Emacs: end-of-line" })
 vim.keymap.set("n", "<leader>tt", function()
   local d = vim.fn.expand("%:p:h")
   if d == "" then
-    d = vim.loop.cwd() -- 当前 buffer 没有路径时兜底
+    d = vim.loop.cwd()
   end
 
-  vim.cmd("tabnew") -- 新开一个 tab（全屏空间）
-  vim.cmd("tcd " .. vim.fn.fnameescape(d)) -- 只影响这个 tab 的工作目录
+  vim.cmd("enew") -- 新 buffer，占用当前窗口
+  vim.cmd("lcd " .. vim.fn.fnameescape(d)) -- 只影响当前窗口
   vim.cmd("terminal")
   vim.cmd("startinsert")
-end, { desc = "Terminal (tab) @ buffer dir" })
+end, { desc = "Terminal (current win) @ buffer dir" })
+
+vim.keymap.set("n", "<leader>tn", function()
+  local cwd = vim.loop.cwd()
+  if vim.fn.has("win32") == 1 then
+    vim.fn.jobstart({ "neovide", cwd }, { detach = true })
+  else
+    vim.fn.jobstart({ "neovide", cwd }, { detach = true })
+  end
+end, { desc = "Open new Neovide window @ cwd" })
+
+-- 用 Tab / Shift-Tab 切换 tabpage（只在普通模式，避免影响插入模式补全）
+vim.keymap.set("n", "<Tab>", "gt", { desc = "Next tab" })
+vim.keymap.set("n", "<S-Tab>", "gT", { desc = "Prev tab" })
 
 -- 复制当前行第一条 LSP 诊断信息到系统剪贴板
 vim.keymap.set("n", "<leader>cD", function()
