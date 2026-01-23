@@ -101,3 +101,8 @@ vim.keymap.set("n", "<leader>cD", function()
   vim.fn.setreg("+", msg) -- 写入系统剪贴板寄存器 +
   vim.notify("已复制诊断信息到剪贴板", vim.log.levels.INFO)
 end, { desc = "Yank LSP diagnostic message" })
+
+vim.keymap.set("n", "<leader>fo", function()
+  local p = vim.fn.expand("%:p"):gsub("/", "\\")
+  vim.fn.jobstart({ "explorer.exe", "/select,", p }, { detach = true })
+end, { desc = "Open in Explorer (select file)" })
