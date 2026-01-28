@@ -9,3 +9,10 @@ if vim.g.neovide then
   -- 启动时全屏
   vim.g.neovide_fullscreen = true
 end
+
+-- 固定启动目录（无论从哪里打开 nvim）
+vim.api.nvim_create_autocmd("VimEnter", {
+  callback = function()
+    vim.cmd.cd(vim.fn.expand("D:/")) -- 改成你想要的目录
+  end,
+})
