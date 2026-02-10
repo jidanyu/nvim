@@ -106,3 +106,39 @@ vim.keymap.set("n", "<leader>fo", function()
   local p = vim.fn.expand("%:p"):gsub("/", "\\")
   vim.fn.jobstart({ "explorer.exe", "/select,", p }, { detach = true })
 end, { desc = "Open in Explorer (select file)" })
+
+-- 复制当前文件相对项目根目录的路径到剪贴板
+vim.keymap.set("n", "<leader>fc", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  if file == "" then
+    vim.notify("当前 buffer 没有关联文件", vim.log.levels.WARN)
+    return
+  end
+
+  local root = nil
+  local ok_root, util = pcall(require, "lazyvim.util")
+  if ok_root and util and util.root then
+    root = util.root()
+  end
+
+  local normalized_file = vim.fs.normalize(file)
+  local rel = nil
+
+  if root and root ~= "" then
+    local normalized_root = vim.fs.normalize(root)
+    local sep = package.config:sub(1, 1)
+    if normalized_file:sub(1, #normalized_root) == normalized_root then
+      rel = normalized_file:sub(#normalized_root + 2)
+      if sep ~= "/" then
+        rel = rel:gsub("/", sep)
+      end
+    end
+  end
+
+  if not rel or rel == "" then
+    rel = vim.fn.fnamemodify(file, ":.")
+  end
+
+  vim.fn.setreg("+", rel)
+  vim.notify("已复制相对路径: " .. rel, vim.log.levels.INFO)
+end, { desc = "Yank relative file path" })
